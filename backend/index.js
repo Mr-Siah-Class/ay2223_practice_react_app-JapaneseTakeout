@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////
 // INCLUDES
 //////////////////////////////////////////////////////
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
 //////////////////////////////////////////////////////
 // INIT
@@ -10,7 +10,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const pool = require('./db'); //Import from db.js
+const pool = require("./db"); //Import from db.js
 
 //////////////////////////////////////////////////////
 // SETUP APP
@@ -29,16 +29,16 @@ app.use(express.urlencoded({ extended: false }));
 // http://localhost:3000/api/
 // Use Postman to test
 //////////////////////////////////////////////////////
-app.get('/api', async (req, res, next) => {
-    console.log(req.query);
+app.get("/api", async (req, res, next) => {
+  console.log(req.query);
 
-    res.json(req.query);
+  res.json(req.query);
 });
 
-app.post('/api', async (req, res, next) => {
-    console.log(req.body);
+app.post("/api", async (req, res, next) => {
+  console.log(req.body);
 
-    res.json(req.body);
+  res.json(req.body);
 });
 
 //////////////////////////////////////////////////////
@@ -51,14 +51,14 @@ const CREATE_TABLE_SQL = `
     );
 `;
 
-app.post('/api/table', async (req, res, next) => {
-    
-    pool.query(CREATE_TABLE_SQL)
+app.post("/api/table", async (req, res, next) => {
+  pool
+    .query(CREATE_TABLE_SQL)
     .then(() => {
-         res.send(`Table created`);
+      res.send(`Table created`);
     })
     .catch((error) => {
-        res.send(error);
+      res.send(error);
     });
 });
 
@@ -69,60 +69,55 @@ const DROP_TABLE_SQL = `
     DROP TABLE IF EXISTS messages;
 `;
 
-app.delete('/api/table', async (req, res, next) => {
-    
-    pool.query(DROP_TABLE_SQL)
+app.delete("/api/table", async (req, res, next) => {
+  pool
+    .query(DROP_TABLE_SQL)
     .then(() => {
-        res.send(`Table dropped`);
+      res.send(`Table dropped`);
     })
     .catch((error) => {
-        res.send(error);
+      res.send(error);
     });
 });
 
 //////////////////////////////////////////////////////
 // POST GET METHODS CONNECTED TO DB
 //////////////////////////////////////////////////////
-app.get('/api/message', async (req, res, next) => {
-    
-    try
-    {
-        console.log(req.query);
+app.get("/api/message", async (req, res, next) => {
+  try {
+    console.log(req.query);
 
-        const allMessage = await pool.query("SELECT * FROM messages"); 
+    const allMessage = await pool.query("SELECT * FROM messages");
 
-        res.json(allMessage.rows);
-    }
-    catch(err)
-    {
-        console.error(err.message);
-    }
+    res.json(allMessage.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
-app.post('/api/message', async (req, res, next) => {
-    try
-    {
-        console.log(req.body);
-        let message = req.body.message;
+app.post("/api/message", async (req, res, next) => {
+  try {
+    console.log(req.body);
+    let message = req.body.message;
 
-        const newInsert = await pool.query("INSERT INTO messages (message) VALUES ($1) RETURNING *", [message]);
+    const newInsert = await pool.query(
+      "INSERT INTO messages (message) VALUES ($1) RETURNING *",
+      [message]
+    );
 
-        res.json(newInsert);
-    }
-    catch(err)
-    {
-        console.error(err.message);
-    }
+    res.json(newInsert);
+  } catch (err) {
+    console.error(err.message);
+  }
 });
-
 
 //////////////////////////////////////////////////////
 // DISPLAY SERVER RUNNING
 //////////////////////////////////////////////////////
-app.get('/', (req, res) => {
-    res.send(`Server running on port ${PORT}`)
+app.get("/", (req, res) => {
+  res.send(`Server running on port ${PORT}`);
 });
 
 app.listen(PORT, () => {
-    console.log(`App listening to port ${PORT}`);
+  console.log(`App listening to port ${PORT}`);
 });
